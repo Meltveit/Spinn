@@ -16,8 +16,8 @@ export type PresetWheel = {
 export const PRESET_CATEGORIES: PresetCategory[] = [
     {
         id: "food",
-        title: "The Dinner Decider",
-        description: "Can't decide what to eat? Let the wheel choose your next meal.",
+        title: "Food & Drink",
+        description: "The hardest decision of the day, solved instantly.",
         presets: [
             {
                 id: "dinner-basic",
@@ -29,6 +29,8 @@ export const PRESET_CATEGORIES: PresetCategory[] = [
                     { id: "4", text: "Burgers", color: "#10B981" },
                     { id: "5", text: "Salad", color: "#8B5CF6" },
                     { id: "6", text: "Pasta", color: "#EC4899" },
+                    { id: "7", text: "Steak", color: "#F43F5E" },
+                    { id: "8", text: "Curry", color: "#6366F1" },
                 ]
             },
             {
@@ -39,17 +41,32 @@ export const PRESET_CATEGORIES: PresetCategory[] = [
                     { id: "2", text: "Indian", color: "#3B82F6" },
                     { id: "3", text: "Thai", color: "#F59E0B" },
                     { id: "4", text: "Kebab", color: "#10B981" },
+                    { id: "5", text: "McDonald's", color: "#FACC15" },
+                    { id: "6", text: "KFC", color: "#DC2626" },
+                    { id: "7", text: "Subway", color: "#16A34A" },
+                ]
+            },
+            {
+                id: "coffee-order",
+                title: "Coffee Shop Order",
+                segments: [
+                    { id: "1", text: "Latte", color: "#D97706" },
+                    { id: "2", text: "Cappuccino", color: "#92400E" },
+                    { id: "3", text: "Iced Americano", color: "#78350F" },
+                    { id: "4", text: "Matcha", color: "#10B981" },
+                    { id: "5", text: "Espresso", color: "#000000" },
+                    { id: "6", text: "Chai", color: "#B45309" },
                 ]
             }
         ]
     },
     {
         id: "entertainment",
-        title: "The Movie Night Wheel",
-        description: "End the scrolling paralysis on Netflix.",
+        title: "Activities & Entertainment",
+        description: "Boredom busters for solo nights or group hangouts.",
         presets: [
             {
-                id: "genre",
+                id: "movie-genre",
                 title: "Movie Genre",
                 segments: [
                     { id: "1", text: "Action", color: "#EF4444" },
@@ -57,24 +74,132 @@ export const PRESET_CATEGORIES: PresetCategory[] = [
                     { id: "3", text: "Horror", color: "#F59E0B" },
                     { id: "4", text: "Sci-Fi", color: "#10B981" },
                     { id: "5", text: "Romance", color: "#8B5CF6" },
-                    { id: "6", text: "Documentary", color: "#EC4899" },
+                    { id: "6", text: "Thriller", color: "#EC4899" },
+                ]
+            },
+            {
+                id: "date-night",
+                title: "Date Night Ideas",
+                segments: [
+                    { id: "1", text: "Cinema", color: "#EC4899" },
+                    { id: "2", text: "Fancy Dinner", color: "#EF4444" },
+                    { id: "3", text: "Bowling", color: "#3B82F6" },
+                    { id: "4", text: "Cook Together", color: "#10B981" },
+                    { id: "5", text: "Board Games", color: "#F59E0B" },
+                    { id: "6", text: "Stargazing", color: "#6366F1" },
+                ]
+            },
+            {
+                id: "workout",
+                title: "Quick Workout",
+                segments: [
+                    { id: "1", text: "20 Pushups", color: "#EF4444" },
+                    { id: "2", text: "50 Squats", color: "#3B82F6" },
+                    { id: "3", text: "1min Plank", color: "#F59E0B" },
+                    { id: "4", text: "30 Burpees", color: "#10B981" },
+                    { id: "5", text: "Rest Day!", color: "#8B5CF6" },
+                    { id: "6", text: "Run 1km", color: "#06B6D4" },
+                ]
+            }
+        ]
+    },
+    {
+        id: "party",
+        title: "Party & Social",
+        description: "Ice breakers and party games.",
+        presets: [
+            {
+                id: "truth-dare",
+                title: "Truth or Dare",
+                segments: [
+                    { id: "1", text: "Truth", color: "#3B82F6" },
+                    { id: "2", text: "Dare", color: "#EF4444" },
+                    { id: "3", text: "Truth", color: "#3B82F6" },
+                    { id: "4", text: "Dare", color: "#EF4444" },
+                    { id: "5", text: "Spin Again", color: "#10B981" },
+                ]
+            },
+            {
+                id: "drinking-game",
+                title: "Sip or Skip (21+)",
+                segments: [
+                    { id: "1", text: "Take 1 Sip", color: "#EF4444" },
+                    { id: "2", text: "Give 2 Sips", color: "#3B82F6" },
+                    { id: "3", text: "Waterfall", color: "#06B6D4" },
+                    { id: "4", text: "Truth", color: "#8B5CF6" },
+                    { id: "5", text: "Never Have I Ever", color: "#F59E0B" },
+                    { id: "6", text: "Finish It", color: "#000000" },
+                ]
+            },
+            {
+                id: "charades",
+                title: "Charades Categories",
+                segments: [
+                    { id: "1", text: "Movies", color: "#EF4444" },
+                    { id: "2", text: "Animals", color: "#10B981" },
+                    { id: "3", text: "Songs", color: "#3B82F6" },
+                    { id: "4", text: "Objects", color: "#F59E0B" },
+                    { id: "5", text: "Actions", color: "#8B5CF6" },
+                    { id: "6", text: "Celebs", color: "#EC4899" },
                 ]
             }
         ]
     },
     {
         id: "streaming",
-        title: "The Streamer Box",
-        description: "Tools for Twitch & Kick streamers to engage chat.",
+        title: "Streamer Tools",
+        description: "Engage your Twitch/Kick chat.",
         presets: [
             {
-                id: "stream-game",
-                title: "Which game next?",
+                id: "stream-challenge",
+                title: "In-Game Challenge",
                 segments: [
-                    { id: "1", text: "Fortnite", color: "#EF4444" },
-                    { id: "2", text: "Valorant", color: "#3B82F6" },
-                    { id: "3", text: "Minecraft", color: "#F59E0B" },
-                    { id: "4", text: "Just Chatting", color: "#10B981" },
+                    { id: "1", text: "Use Pistol Only", color: "#EF4444" },
+                    { id: "2", text: "No Healing", color: "#DC2626" },
+                    { id: "3", text: "Sensitivity x2", color: "#F59E0B" },
+                    { id: "4", text: "Mute Game Sound", color: "#3B82F6" },
+                    { id: "5", text: "Chat Chooses Loadout", color: "#8B5CF6" },
+                    { id: "6", text: "Drop Best Item", color: "#000000" },
+                ]
+            },
+            {
+                id: "giveaway",
+                title: "Simple Giveaway",
+                segments: [
+                    { id: "1", text: "User 1", color: "#3B82F6" },
+                    { id: "2", text: "User 2", color: "#10B981" },
+                    { id: "3", text: "User 3", color: "#F59E0B" },
+                    { id: "4", text: "User 4", color: "#EF4444" },
+                    // This is just a template, users edit this
+                ]
+            }
+        ]
+    },
+    {
+        id: "daily",
+        title: "Daily Decisions",
+        description: "Small choices made easy.",
+        presets: [
+            {
+                id: "cleaning",
+                title: "What to Clean?",
+                segments: [
+                    { id: "1", text: "Dishes", color: "#3B82F6" },
+                    { id: "2", text: "Laundry", color: "#EC4899" },
+                    { id: "3", text: "Vacuum", color: "#10B981" },
+                    { id: "4", text: "Bathroom", color: "#EF4444" },
+                    { id: "5", text: "Take a Break", color: "#F59E0B" },
+                ]
+            },
+            {
+                id: "weekend",
+                title: "Weekend Plans",
+                segments: [
+                    { id: "1", text: "Sleep In", color: "#6366F1" },
+                    { id: "2", text: "Hike/Walk", color: "#10B981" },
+                    { id: "3", text: "Visit Family", color: "#F59E0B" },
+                    { id: "4", text: "Gaming Marathon", color: "#EF4444" },
+                    { id: "5", text: "Read a Book", color: "#3B82F6" },
                 ]
             }
         ]
