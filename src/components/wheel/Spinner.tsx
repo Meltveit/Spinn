@@ -38,33 +38,32 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
 
         // --- Target Calculation ---
         // 1. Current position: currentRotationRef.current
-        // 2. Add full spins: 360 * (5..8)
-        // 3. Add offset: 
-        //    Index 0 starts at 12 o'clock (-90deg relative to 3 o'clock, but 0deg relative to our container Top).
-        //    Center of Index 0 is at +segmentAngle/2.
-        //    To bring Index 0's center to Top, we need to rotate: - (segmentAngle/2).
-        //    To bring Index i's center to Top, we need to rotate: - (i * segmentAngle + segmentAngle/2).
-        //    Wait, rotation is CLOCKWISE.
-        //    So we need to rotate BACKWARDS (negative) to bring a segment to the top?
-        //    OR rotate FORWARD (positive) until it loops around?
+        // 2. We want to land on 'targetAngleFromTop' (relative to the wheel's 0-degree start).
+        //    But since we are rotating the CONTAINER, we want the container to rotate such that the target segment is at the TOP (0 deg).
+        //    If the segment is at +90deg (3 o'clock) normally, we need to rotate the container -90deg (or +270deg) to bring it to 12 o'clock.
 
-        // Let's use Positive Rotation (Clockwise).
-        // If Index 0 is at Top (0 deg).
-        // To bring Index 1 (currently at 90 deg) to Top. 
-        // We must rotate -90 deg (Counter-Clockwise) OR +270 deg (Clockwise).
-        // Let's stick to +Clockwise for the animation.
-        // Rotation = 360 - TargetAngle.
-        // Where TargetAngle is the center of the segment in the current 0-indexed layout.
+        const winnerAngleRelativeToWheelZero = (winnerIndex * segmentAngle) + (segmentAngle / 2);
 
-        const targetAngleFromTop = (winnerIndex * segmentAngle) + (segmentAngle / 2);
-        const rotationNeeded = 360 - targetAngleFromTop;
+        // The rotation needed to bring 'winnerAngleRelativeToWheelZero' to the Top (0 deg):
+        // TargetRotation = 360 - winnerAngleRelativeToWheelZero.
+        const targetVisualAngle = 360 - winnerAngleRelativeToWheelZero;
+
+        // Calculate the diff from current rotation to the next target visual angle.
+        // We want to move FORWARD (Clockwise).
+        const currentVisualAngle = currentRotationRef.current % 360;
+
+        let diff = targetVisualAngle - currentVisualAngle;
+        if (diff < 0) {
+            diff += 360;
+        }
 
         // Add random jitter: +/- 40% of segment width
         const noise = (Math.random() - 0.5) * (segmentAngle * 0.8);
 
         const extraSpins = 360 * (5 + Math.floor(Math.random() * 3));
 
-        const newTotalRotation = currentRotationRef.current + extraSpins + rotationNeeded + noise;
+        // New Total = Old Total + Spins + Diff + Noise
+        const newTotalRotation = currentRotationRef.current + extraSpins + diff + noise;
 
         // Ensure strictly increasing rotation for smooth clockwise spin
         // (Sometimes noise could technically make it slightly less than previous if extraSpins was 0, but extraSpins is huge).
