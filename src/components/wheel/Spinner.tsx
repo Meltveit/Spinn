@@ -159,15 +159,15 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
                         return (
                             <div
                                 key={seg.id}
-                                className="absolute top-1/2 left-1/2 h-1/2 origin-bottom flex justify-center pt-8"
+                                className="absolute top-1/2 left-1/2 h-1/2 origin-bottom flex justify-center pt-2 pb-12"
                                 style={{
                                     transform: `translate(-50%, -100%) rotate(${angle}deg)`,
                                     width: `${300 / segments.length}%`
                                 }}
                             >
                                 <span
-                                    className="text-white font-bold text-sm uppercase tracking-wider truncate px-1 drop-shadow-md select-none"
-                                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: '120px' }}
+                                    className="text-white font-bold text-[10px] md:text-sm uppercase tracking-wider truncate px-1 drop-shadow-md select-none"
+                                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: '100%' }}
                                 >
                                     {seg.text}
                                 </span>
