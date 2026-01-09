@@ -166,7 +166,7 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
                                 }}
                             >
                                 <span
-                                    className="text-white font-bold text-[10px] md:text-sm uppercase tracking-wider truncate px-1 drop-shadow-md select-none"
+                                    className="text-white font-bold text-xs md:text-sm uppercase tracking-wider truncate px-1 drop-shadow-md select-none"
                                     style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: '100%' }}
                                 >
                                     {seg.text}
