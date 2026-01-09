@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,22 @@ export default function RootLayout({
       >
         {children}
         <Analytics />
+
+        {/* Monetag Ad: Vignette / Native */}
+        <Script
+          src="https://gizokraijaw.net/vignette.min.js"
+          data-zone="10441019"
+          strategy="afterInteractive"
+        />
+
+        {/* Monetag Ad: Multi-Tag */}
+        <Script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="200487"
+          async
+          data-cfasync="false"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
