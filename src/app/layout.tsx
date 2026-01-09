@@ -33,14 +33,6 @@ export default function RootLayout({
         <Analytics />
 
 
-        {/* Monetag Ad: Multi-Tag */}
-        <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="200487"
-          async
-          data-cfasync="false"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
