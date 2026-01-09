@@ -32,6 +32,21 @@ export default function RootLayout({
         {children}
         <Analytics />
 
+        {/* Monetag: Script 1 */}
+        <Script
+          src="https://3nbf4.com/act/files/tag.min.js?z=10441037"
+          data-cfasync="false"
+          async
+          strategy="afterInteractive"
+        />
+
+        {/* Monetag: Script 2 */}
+        <Script
+          src="https://al5sm.com/tag.min.js"
+          data-zone="10441041"
+          strategy="afterInteractive"
+        />
+
 
       </body>
     </html>
