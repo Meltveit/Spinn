@@ -1,14 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, useAnimation, PanInfo } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-export type WheelSegment = {
-    id: string;
-    text: string;
-    color: string;
-};
+import { WheelSegment } from "@/lib/types";
 
 interface SpinnerProps {
     segments: WheelSegment[];
@@ -19,70 +14,80 @@ interface SpinnerProps {
 
 export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: SpinnerProps) {
     const controls = useAnimation();
-    const [rotation, setRotation] = useState(0);
 
-    const spin = () => {
-        if (isSpinning) return;
+    // We strictly use a Ref for current rotation to avoid re-render conflicts.
+    // We only need state for initial render, or not even that if we start at 0.
+    const currentRotationRef = useRef(0);
+    const isSpinningRef = useRef(false);
 
+    useEffect(() => {
+        if (isSpinning && !isSpinningRef.current) {
+            spin();
+        }
+    }, [isSpinning]);
+
+    const spin = async () => {
         // Safety check
         if (segments.length === 0) return;
 
-        if (setIsSpinning) setIsSpinning(true);
+        isSpinningRef.current = true;
 
         // Random winner index
         const winnerIndex = Math.floor(Math.random() * segments.length);
         const segmentAngle = 360 / segments.length;
 
-        // Calculate rotation to land on the winner
-        // We want the winner to be at the top scanner (270deg or -90deg usually, let's say pointer is at top 0deg)
-        // If pointer is at top, and we rotate clockwise.
-        // Segment 0 starts at 0deg?
-        // Let's assume standard unit circle, 0 is right. Top is 270 (-90).
-        // Let's just make sure the pointer is visually aligned.
+        // --- Target Calculation ---
+        // 1. Current position: currentRotationRef.current
+        // 2. Add full spins: 360 * (5..8)
+        // 3. Add offset: 
+        //    Index 0 starts at 12 o'clock (-90deg relative to 3 o'clock, but 0deg relative to our container Top).
+        //    Center of Index 0 is at +segmentAngle/2.
+        //    To bring Index 0's center to Top, we need to rotate: - (segmentAngle/2).
+        //    To bring Index i's center to Top, we need to rotate: - (i * segmentAngle + segmentAngle/2).
+        //    Wait, rotation is CLOCKWISE.
+        //    So we need to rotate BACKWARDS (negative) to bring a segment to the top?
+        //    OR rotate FORWARD (positive) until it loops around?
 
-        // Extra rotations for effect (5 to 10 full spins)
-        const extraSpins = 360 * (5 + Math.floor(Math.random() * 5));
+        // Let's use Positive Rotation (Clockwise).
+        // If Index 0 is at Top (0 deg).
+        // To bring Index 1 (currently at 90 deg) to Top. 
+        // We must rotate -90 deg (Counter-Clockwise) OR +270 deg (Clockwise).
+        // Let's stick to +Clockwise for the animation.
+        // Rotation = 360 - TargetAngle.
+        // Where TargetAngle is the center of the segment in the current 0-indexed layout.
 
-        // Random offset within the segment to avoid landing on lines
-        const randomOffset = Math.random() * (segmentAngle - 10) + 5;
+        const targetAngleFromTop = (winnerIndex * segmentAngle) + (segmentAngle / 2);
+        const rotationNeeded = 360 - targetAngleFromTop;
 
-        // The target angle
-        // If we want index N to be at the top:
-        // We need to rotate such that the start of seg N + offset is at the pointer.
+        // Add random jitter: +/- 40% of segment width
+        const noise = (Math.random() - 0.5) * (segmentAngle * 0.8);
 
-        const newRotation = rotation + extraSpins + (360 - (winnerIndex * segmentAngle)) + randomOffset;
+        const extraSpins = 360 * (5 + Math.floor(Math.random() * 3));
 
-        controls.start({
-            rotate: newRotation,
+        const newTotalRotation = currentRotationRef.current + extraSpins + rotationNeeded + noise;
+
+        // Ensure strictly increasing rotation for smooth clockwise spin
+        // (Sometimes noise could technically make it slightly less than previous if extraSpins was 0, but extraSpins is huge).
+
+        await controls.start({
+            rotate: newTotalRotation,
             transition: {
-                duration: 4,
-                ease: [0.15, 0, 0.2, 1], // Cubic bezier for "spin down" feel
+                duration: 4.5,
+                ease: [0.2, 0, 0.1, 1], // Ease out quart/quint
                 type: "tween"
             }
-        }).then(() => {
-            setRotation(newRotation % 360);
-            if (setIsSpinning) setIsSpinning(false);
-            if (onSpinEnd) onSpinEnd(segments[winnerIndex]);
         });
+
+        // Update ref to the new final value so next spin starts from here
+        currentRotationRef.current = newTotalRotation;
+
+        // We do NOT mod 360 the ref, so the number just grows. This prevents "rewind" animations.
+
+        isSpinningRef.current = false;
+
+        if (setIsSpinning) setIsSpinning(false);
+        if (onSpinEnd) onSpinEnd(segments[winnerIndex]);
     };
-
-    // Allow parent to trigger spin if needed, but usually we just click standard button?
-    // Let's expose spin via ref or just have a button inside/outside.
-    // For now, let's just use the prop to know we ARE spinning.
-
-    // Actually, we want to call spin() when the User clicks "SPIN".
-    // So we probably need to expose this or handle it via a prop trigger. 
-    // But cleaner is to have a "Spin" button in the center or outside.
-
-    // Let's attach spin to the internal method for now, but usually this is controlled from outside.
-    // We'll update this once we have the parent controller.
-
-    useEffect(() => {
-        if (isSpinning) {
-            spin();
-        }
-    }, [isSpinning]);
-
 
     // Helper to calculate SVG path for a segment
     const getSegmentPath = (index: number, total: number) => {
@@ -106,16 +111,35 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
 
     return (
         <div className="relative w-full max-w-[400px] aspect-square mx-auto">
-            {/* Pointer */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-20 w-8 h-10 pointer-events-none">
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[30px] border-t-zinc-800 drop-shadow-lg"></div>
+            {/* Pointer - Modern SVG */}
+            <div className="absolute top-[-25px] left-1/2 -translate-x-1/2 z-20 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]">
+                <svg
+                    width="40"
+                    height="50"
+                    viewBox="0 0 40 50"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="transform origin-top"
+                >
+                    {/* Main Arrow Body - Rounded Top, Sharp Point */}
+                    <path
+                        d="M20 50L0 15C0 6.71573 6.71573 0 15 0H25C33.2843 0 40 6.71573 40 15L20 50Z"
+                        fill="white"
+                        stroke="#E4E4E7"
+                        strokeWidth="2"
+                    />
+                    {/* Inner Detail for depth */}
+                    <circle cx="20" cy="15" r="6" fill="#F4F4F5" />
+                    <circle cx="20" cy="15" r="2" fill="#D4D4D8" />
+                </svg>
             </div>
 
             {/* Wheel */}
             <motion.div
-                className="w-full h-full rounded-full border-4 border-white shadow-2xl overflow-hidden relative"
+                className="w-full h-full rounded-full border-[8px] border-white/10 shadow-2xl overflow-hidden relative"
                 animate={controls}
                 initial={{ rotate: 0 }}
+            // removed style={{ rotate }} to prevent React state vs Framer Motion conflicts
             >
                 <svg viewBox="0 0 100 100" className="w-full h-full transform transition-transform">
                     {segments.map((seg, i) => (
@@ -136,15 +160,15 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
                         return (
                             <div
                                 key={seg.id}
-                                className="absolute top-1/2 left-1/2 h-1/2 origin-bottom flex justify-center pt-4"
+                                className="absolute top-1/2 left-1/2 h-1/2 origin-bottom flex justify-center pt-8"
                                 style={{
                                     transform: `translate(-50%, -100%) rotate(${angle}deg)`,
                                     width: `${300 / segments.length}%`
                                 }}
                             >
                                 <span
-                                    className="text-white font-bold text-xs uppercase tracking-wider truncate px-1 drop-shadow-md"
-                                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                                    className="text-white font-bold text-sm uppercase tracking-wider truncate px-1 drop-shadow-md select-none"
+                                    style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: '120px' }}
                                 >
                                     {seg.text}
                                 </span>
@@ -154,9 +178,11 @@ export function Spinner({ segments, onSpinEnd, isSpinning, setIsSpinning }: Spin
                 </div>
             </motion.div>
 
-            {/* Center Knocker/Hub */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg z-10 flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500"></div>
+            {/* Center Hub */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-xl z-10 flex items-center justify-center border-4 border-zinc-100">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-inner flex items-center justify-center">
+                    <div className="w-4 h-4 rounded-full bg-white/50 blur-[1px]"></div>
+                </div>
             </div>
         </div>
     );
