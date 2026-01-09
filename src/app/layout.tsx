@@ -32,12 +32,6 @@ export default function RootLayout({
         {children}
         <Analytics />
 
-        {/* Monetag Ad: Vignette / Native */}
-        <Script
-          src="https://gizokraijaw.net/vignette.min.js"
-          data-zone="10441019"
-          strategy="afterInteractive"
-        />
 
         {/* Monetag Ad: Multi-Tag */}
         <Script
