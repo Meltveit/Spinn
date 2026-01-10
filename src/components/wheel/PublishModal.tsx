@@ -17,6 +17,7 @@ interface PublishModalProps {
 
 export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
     const [category, setCategory] = useState(COMMUNITY_CATEGORIES[0].id);
+    const [description, setDescription] = useState("");
     const [isPublishing, setIsPublishing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -28,7 +29,8 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
         setError(null);
 
         // 1. Moderation Check
-        const allText = wheel.title + " " + wheel.segments.map(s => s.text).join(" ");
+        // 1. Moderation Check
+        const allText = wheel.title + " " + description + " " + wheel.segments.map(s => s.text).join(" ");
         if (checkProfanity(allText)) {
             setError("Wheel contains inappropriate content (English profanity filter).");
             setIsPublishing(false);
@@ -42,7 +44,9 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
                 .insert({
                     wheel_id: wheel.id,
                     category: category,
+                    description: description.trim() || null,
                     reports: 0,
+                    spins: 0,
                     is_hidden: false
                 });
 
@@ -125,6 +129,19 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* Optional Description */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Description (Optional)</label>
+                                <textarea
+                                    className="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-colors resize-none h-20"
+                                    placeholder="Tell people what this wheel is for..."
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    maxLength={150}
+                                />
+                                <div className="text-right text-[10px] text-zinc-600">{description.length}/150</div>
                             </div>
 
                             {/* Error Message */}

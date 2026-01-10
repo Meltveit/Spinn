@@ -9,6 +9,7 @@ import { Spinner } from "@/components/wheel/Spinner";
 import { SpinButton } from "@/components/wheel/SpinButton";
 import { PublishModal } from "@/components/wheel/PublishModal";
 import { Wheel, WheelSegment } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
 
 export function SharedWheelView({ wheel }: { wheel: Wheel }) {
     const [isSpinning, setIsSpinning] = useState(false);
@@ -18,6 +19,11 @@ export function SharedWheelView({ wheel }: { wheel: Wheel }) {
     const handleSpinEnd = (winningSegment: WheelSegment) => {
         setWinner(winningSegment);
         triggerConfetti();
+
+        // Fire-and-forget spin count increment
+        supabase.rpc("increment_spin_count", { target_id: wheel.id }).then(({ error }) => {
+            if (error) console.error("Failed to increment spin count:", error);
+        });
     };
 
     const triggerConfetti = () => {

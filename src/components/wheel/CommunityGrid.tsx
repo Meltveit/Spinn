@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Search, Filter, AlertTriangle, MessageSquare, Flag } from "lucide-react";
+import { Search, Filter, AlertTriangle, MessageSquare, Flag, Play } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { COMMUNITY_CATEGORIES } from "@/lib/constants";
@@ -11,7 +11,9 @@ import { COMMUNITY_CATEGORIES } from "@/lib/constants";
 interface CommunityWheel {
     wheel_id: string;
     category: string;
+    description: string | null;
     reports: number;
+    spins: number;
     created_at: string;
     wheels: {
         id: string;
@@ -137,12 +139,21 @@ export function CommunityGrid() {
                                         <span className="text-[10px] text-zinc-600 px-1">+{item.wheels.segments.length - 3} more</span>
                                     )}
                                 </div>
+
+                                {item.description && (
+                                    <p className="text-xs text-zinc-500 line-clamp-2 mb-4">
+                                        {item.description}
+                                    </p>
+                                )}
                             </Link>
 
                             {/* Actions Footer */}
                             <div className="px-6 py-3 border-t border-white/5 flex justify-between items-center bg-black/20">
-                                <span className="text-xs text-zinc-600">
-                                    By Anonymous
+                                <span className="text-xs text-zinc-600 flex items-center gap-2">
+                                    <span className="flex items-center gap-1 text-indigo-400">
+                                        <Play size={10} fill="currentColor" />
+                                        <span className="font-bold">{item.spins || 0}</span>
+                                    </span>
                                 </span>
                                 <button
                                     onClick={(e) => {
