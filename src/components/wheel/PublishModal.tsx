@@ -60,9 +60,9 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
             } else {
                 setSuccess(true);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError("Failed to publish. Try again later.");
+            setError(err.message || "Failed to publish. Try again later.");
         } finally {
             setIsPublishing(false);
         }
