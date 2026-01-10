@@ -11,7 +11,10 @@ import { PublishModal } from "@/components/wheel/PublishModal";
 import { Wheel, WheelSegment } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 
-export function SharedWheelView({ wheel }: { wheel: Wheel }) {
+import { Check, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: Wheel; isAlreadyPublished?: boolean }) {
     const [isSpinning, setIsSpinning] = useState(false);
     const [winner, setWinner] = useState<WheelSegment | null>(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -63,29 +66,36 @@ export function SharedWheelView({ wheel }: { wheel: Wheel }) {
 
             <header className="fixed top-0 w-full z-40 bg-black/10 backdrop-blur-lg border-b border-white/5">
                 <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
-                        <Image
-                            src="/logo.png"
-                            alt="SpintheQ Logo"
-                            width={140}
-                            height={40}
-                            className="h-10 w-auto object-contain"
-                            priority
-                        />
-                    </Link>
-                    <Link href="/" className="px-6 py-2 bg-white text-black rounded-full font-bold text-xs uppercase hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                        Create Your Own
-                    </Link>
-                </div>
+                    <div className="flex items-center gap-4">
+                        <Link href="/library/community" className="p-2 hover:bg-white/10 rounded-full transition-colors text-zinc-400 hover:text-white">
+                            <ArrowLeft size={20} />
+                        </Link>
+                        <Link href="/" className="flex items-center gap-2">
+                            <Image
+                                src="/logo.png"
+                                alt="SpintheQ Logo"
+                                width={140}
+                                height={40}
+                                className="h-10 w-auto object-contain"
+                                priority
+                            />
+                        </Link>
+                        <div className="flex items-center gap-4">
+                            <Link href="/library" className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Library</Link>
+                            <Link href="/" className="px-6 py-2 bg-white text-black rounded-full font-bold text-xs uppercase hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                                Create Your Own
+                            </Link>
+                        </div>
+                    </div>
             </header>
 
             <main className="pt-24 pb-20 px-4 max-w-4xl mx-auto flex flex-col items-center gap-12 relative z-10">
-                <div className="text-center space-y-2">
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 drop-shadow-sm pb-2">
+                <div className="text-center space-y-2 max-w-2xl">
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 drop-shadow-sm pb-4">
                         {wheel.title}
                     </h1>
-                    <p className="text-zinc-400 text-lg">
-                        {winner ? `Result: ${winner.text}` : "Spin to decide!"}
+                    <p className="text-zinc-400 text-lg font-medium">
+                        {winner ? "We have a winner!" : "Spin to decide!"}
                     </p>
                 </div>
 
@@ -108,26 +118,60 @@ export function SharedWheelView({ wheel }: { wheel: Wheel }) {
 
                 {/* Publish to Community Option - Subtle */}
                 <button
-                    onClick={() => setIsPublishModalOpen(true)}
-                    className="text-white/40 text-xs uppercase tracking-widest hover:text-white transition-colors flex items-center gap-2 group"
+                    onClick={() => !isAlreadyPublished && setIsPublishModalOpen(true)}
+                    disabled={isAlreadyPublished}
+                    className={cn(
+                        "mt-8 text-xs uppercase tracking-widest transition-colors flex items-center gap-2 group",
+                        isAlreadyPublished
+                            ? "text-green-400 cursor-default opacity-50"
+                            : "text-white/40 hover:text-white cursor-pointer"
+                    )}
                 >
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
-                    Publish to Community Library
+                    {isAlreadyPublished ? (
+                        <>
+                            <Check size={16} />
+                            Published to Community
+                        </>
+                    ) : (
+                        <>
+                            <span className="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
+                            Publish to Community Library
+                        </>
+                    )}
                 </button>
             </main>
 
-            {/* Simply Winner Overlay */}
+            {/* Winner Modal - Matches Home Page Design */}
             <AnimatePresence>
                 {winner && (
                     <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 50 }}
-                        className="fixed bottom-0 left-0 w-full p-8 bg-zinc-900/90 backdrop-blur-md border-t border-white/10 shadow-2xl z-50 flex flex-col items-center text-center pb-12"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+                        onClick={() => setWinner(null)}
                     >
-                        <div className="uppercase text-xs font-bold text-zinc-400 tracking-widest mb-2">Winner</div>
-                        <div className="text-5xl font-black text-white drop-shadow-lg mb-4">{winner.text}</div>
-                        <button onClick={() => setWinner(null)} className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform">Close</button>
+                        <motion.div
+                            initial={{ scale: 0.5, y: 100 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-zinc-900 border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center relative overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: winner.color }} />
+
+                            <h2 className="text-zinc-400 uppercase tracking-widest text-sm font-bold mb-4">The Result Is</h2>
+                            <div className="text-5xl font-black text-white mb-8 py-2 drop-shadow-lg">
+                                {winner.text}
+                            </div>
+
+                            <button
+                                onClick={() => setWinner(null)}
+                                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25"
+                            >
+                                Spin Again
+                            </button>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

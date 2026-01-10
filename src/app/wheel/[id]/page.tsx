@@ -8,32 +8,43 @@ type Props = {
     params: Promise<{ id: string }>;
 };
 
-async function getWheel(id: string) {
-    const { data, error } = await supabase
+// Fetch both wheel data AND check if it's already published
+async function getWheelData(id: string) {
+    const { data: wheel, error } = await supabase
         .from("wheels")
         .select("*")
         .eq("id", id)
         .single();
 
-    if (error || !data) return null;
-    return data as Wheel;
+    if (error || !wheel) return null;
+
+    // Check if it exists in community_shares
+    const { count } = await supabase
+        .from("community_shares")
+        .select("*", { count: "exact", head: true })
+        .eq("wheel_id", id);
+
+    return {
+        wheel: wheel as Wheel,
+        isPublished: count ? count > 0 : false
+    };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
-    const wheel = await getWheel(id);
+    const data = await getWheelData(id);
 
-    if (!wheel) {
+    if (!data) {
         return {
             title: "Wheel Not Found - SpintheQ",
         };
     }
 
     return {
-        title: `${wheel.title} - SpintheQ`,
-        description: `Spin the wheel to decide: ${wheel.segments.map(s => s.text).slice(0, 3).join(", ")}...`,
+        title: `${data.wheel.title} - SpintheQ`,
+        description: `Spin the wheel to decide: ${data.wheel.segments.map(s => s.text).slice(0, 3).join(", ")}...`,
         openGraph: {
-            title: wheel.title,
+            title: data.wheel.title,
             description: "Spin the wheel to make a decision!",
             type: "website",
         }
@@ -42,11 +53,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WheelPage({ params }: Props) {
     const { id } = await params;
-    const wheel = await getWheel(id);
+    const data = await getWheelData(id);
 
-    if (!wheel) {
+    if (!data) {
         notFound();
     }
 
-    return <SharedWheelView wheel={wheel} />;
+    return <SharedWheelView wheel={data.wheel} isAlreadyPublished={data.isPublished} />;
 }
