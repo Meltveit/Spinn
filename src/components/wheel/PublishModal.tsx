@@ -17,6 +17,7 @@ interface PublishModalProps {
 
 export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
     const [category, setCategory] = useState(COMMUNITY_CATEGORIES[0].id);
+    const [title, setTitle] = useState(wheel.title);
     const [description, setDescription] = useState("");
     const [isPublishing, setIsPublishing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -30,7 +31,7 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
 
         // 1. Moderation Check
         // 1. Moderation Check
-        const allText = wheel.title + " " + description + " " + wheel.segments.map(s => s.text).join(" ");
+        const allText = title + " " + description + " " + wheel.segments.map(s => s.text).join(" ");
         if (checkProfanity(allText)) {
             setError("Wheel contains inappropriate content (English profanity filter).");
             setIsPublishing(false);
@@ -39,6 +40,16 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
 
         // 2. Publish to DB
         try {
+            // First, update the title in the original wheels table if it changed
+            if (title !== wheel.title) {
+                const { error: updateError } = await supabase
+                    .from("wheels")
+                    .update({ title: title })
+                    .eq("id", wheel.id);
+
+                if (updateError) throw updateError;
+            }
+
             const { error: dbError } = await supabase
                 .from("community_shares")
                 .insert({
@@ -105,9 +116,21 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
                         <div className="relative z-10 space-y-6">
                             <div className="text-center">
                                 <h2 className="text-2xl font-black text-white mb-2">Publish to Community</h2>
-                                <p className="text-zinc-400 text-sm">
-                                    Share "<b>{wheel.title}</b>" with the world. Anyone can find and spin it.
+                                <p className="text-zinc-400 text-sm mb-6">
+                                    Share your wheel with the world. Anyone can find and spin it.
                                 </p>
+                            </div>
+
+                            {/* Title Input */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Wheel Title</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-lg font-bold text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Give it a catchy name..."
+                                />
                             </div>
 
                             {/* Category Selection */}
