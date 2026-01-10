@@ -80,13 +80,14 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
                                 priority
                             />
                         </Link>
-                        <div className="flex items-center gap-4">
-                            <Link href="/library" className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Library</Link>
-                            <Link href="/" className="px-6 py-2 bg-white text-black rounded-full font-bold text-xs uppercase hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                                Create Your Own
-                            </Link>
-                        </div>
                     </div>
+                    <div className="flex items-center gap-4">
+                        <Link href="/library" className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Library</Link>
+                        <Link href="/" className="px-6 py-2 bg-white text-black rounded-full font-bold text-xs uppercase hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                            Create Your Own
+                        </Link>
+                    </div>
+                </div>
             </header>
 
             <main className="pt-24 pb-20 px-4 max-w-4xl mx-auto flex flex-col items-center gap-12 relative z-10">
@@ -116,29 +117,16 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
                     disabled={isSpinning}
                 />
 
-                {/* Publish to Community Option - Subtle */}
-                <button
-                    onClick={() => !isAlreadyPublished && setIsPublishModalOpen(true)}
-                    disabled={isAlreadyPublished}
-                    className={cn(
-                        "mt-8 text-xs uppercase tracking-widest transition-colors flex items-center gap-2 group",
-                        isAlreadyPublished
-                            ? "text-green-400 cursor-default opacity-50"
-                            : "text-white/40 hover:text-white cursor-pointer"
-                    )}
-                >
-                    {isAlreadyPublished ? (
-                        <>
-                            <Check size={16} />
-                            Published to Community
-                        </>
-                    ) : (
-                        <>
-                            <span className="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
-                            Publish to Community Library
-                        </>
-                    )}
-                </button>
+                {/* Publish to Community Option - Only show if NOT already published */}
+                {!isAlreadyPublished && (
+                    <button
+                        onClick={() => setIsPublishModalOpen(true)}
+                        className="mt-8 text-white/40 text-xs uppercase tracking-widest hover:text-white transition-colors flex items-center gap-2 group cursor-pointer"
+                    >
+                        <span className="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
+                        Publish to Community Library
+                    </button>
+                )}
             </main>
 
             {/* Winner Modal - Matches Home Page Design */}
