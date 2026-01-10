@@ -7,11 +7,13 @@ import confetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
 import { Spinner } from "@/components/wheel/Spinner";
 import { SpinButton } from "@/components/wheel/SpinButton";
+import { PublishModal } from "@/components/wheel/PublishModal";
 import { Wheel, WheelSegment } from "@/lib/types";
 
 export function SharedWheelView({ wheel }: { wheel: Wheel }) {
     const [isSpinning, setIsSpinning] = useState(false);
     const [winner, setWinner] = useState<WheelSegment | null>(null);
+    const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
     const handleSpinEnd = (winningSegment: WheelSegment) => {
         setWinner(winningSegment);
@@ -97,6 +99,15 @@ export function SharedWheelView({ wheel }: { wheel: Wheel }) {
                     onClick={() => setIsSpinning(true)}
                     disabled={isSpinning}
                 />
+
+                {/* Publish to Community Option - Subtle */}
+                <button
+                    onClick={() => setIsPublishModalOpen(true)}
+                    className="text-white/40 text-xs uppercase tracking-widest hover:text-white transition-colors flex items-center gap-2 group"
+                >
+                    <span className="w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
+                    Publish to Community Library
+                </button>
             </main>
 
             {/* Simply Winner Overlay */}
@@ -114,6 +125,12 @@ export function SharedWheelView({ wheel }: { wheel: Wheel }) {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <PublishModal
+                isOpen={isPublishModalOpen}
+                onClose={() => setIsPublishModalOpen(false)}
+                wheel={wheel}
+            />
         </div>
     );
 }

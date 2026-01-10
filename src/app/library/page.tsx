@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Users, ArrowRight } from "lucide-react";
 import { PRESET_CATEGORIES } from "@/lib/constants";
 
 export const metadata = {
@@ -37,9 +38,18 @@ export default function LibraryPage() {
                     <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 drop-shadow-sm pb-2">
                         Wheel Library
                     </h1>
-                    <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
+                    <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-8">
                         Discover ready-made wheels for every occasion. From dinner decisions to streamer challenges.
                     </p>
+
+                    <Link
+                        href="/library/community"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white font-bold transition-all hover:scale-105 group"
+                    >
+                        <Users size={18} className="text-indigo-400" />
+                        <span>Browse Community Created Wheels</span>
+                        <ArrowRight size={16} className="opacity-50 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
 
                 <div className="space-y-16">

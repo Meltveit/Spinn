@@ -13,6 +13,15 @@ export type PresetWheel = {
     segments: WheelSegment[];
 }
 
+export const COMMUNITY_CATEGORIES = [
+    { id: "decision", label: "🤔 Decision" },
+    { id: "party", label: "🎉 Party/Fun" },
+    { id: "food", label: "🍔 Food & Drink" },
+    { id: "streaming", label: "👾 Streaming/Gaming" },
+    { id: "funny", label: "😂 Just Funny" },
+    { id: "educational", label: "🧠 Educational" },
+];
+
 export const PRESET_CATEGORIES: PresetCategory[] = [
     {
         id: "food",
