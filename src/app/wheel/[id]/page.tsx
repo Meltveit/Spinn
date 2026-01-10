@@ -19,14 +19,21 @@ async function getWheelData(id: string) {
     if (error || !wheel) return null;
 
     // Check if it exists in community_shares
-    const { count } = await supabase
+    const { data: communityData } = await supabase
         .from("community_shares")
-        .select("*", { count: "exact", head: true })
-        .eq("wheel_id", id);
+        .select("title")
+        .eq("wheel_id", id)
+        .single();
+
+    // Override title if it exists in community
+    const finalWheel = { ...wheel } as Wheel;
+    if (communityData?.title) {
+        finalWheel.title = communityData.title;
+    }
 
     return {
-        wheel: wheel as Wheel,
-        isPublished: count ? count > 0 : false
+        wheel: finalWheel,
+        isPublished: !!communityData
     };
 }
 
