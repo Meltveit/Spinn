@@ -11,6 +11,7 @@ import { COMMUNITY_CATEGORIES } from "@/lib/constants";
 interface CommunityWheel {
     wheel_id: string;
     category: string;
+    title: string | null;
     description: string | null;
     reports: number;
     spins: number;
@@ -126,7 +127,7 @@ export function CommunityGrid() {
                                 </div>
 
                                 <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-indigo-400 transition-colors">
-                                    {item.wheels.title}
+                                    {item.title || item.wheels.title}
                                 </h3>
 
                                 <div className="flex flex-wrap gap-1 mb-6">

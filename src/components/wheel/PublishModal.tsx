@@ -40,20 +40,11 @@ export function PublishModal({ isOpen, onClose, wheel }: PublishModalProps) {
 
         // 2. Publish to DB
         try {
-            // First, update the title in the original wheels table if it changed
-            if (title !== wheel.title) {
-                const { error: updateError } = await supabase
-                    .from("wheels")
-                    .update({ title: title })
-                    .eq("id", wheel.id);
-
-                if (updateError) throw updateError;
-            }
-
             const { error: dbError } = await supabase
                 .from("community_shares")
                 .insert({
                     wheel_id: wheel.id,
+                    title: title.trim(),
                     category: category,
                     description: description.trim() || null,
                     reports: 0,
