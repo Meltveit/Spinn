@@ -34,10 +34,10 @@ export default function RootLayout({
         <Footer />
         <Analytics />
 
-        {/* Monetag: Script */}
+        {/* Monetag: Vignette Script */}
         <Script
-          src="https://nap5k.com/tag.min.js"
-          data-zone="10441049"
+          src="https://gizokraijaw.net/vignette.min.js"
+          data-zone="10450128"
           strategy="afterInteractive"
         />
 
