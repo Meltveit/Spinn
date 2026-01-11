@@ -212,5 +212,66 @@ export const PRESET_CATEGORIES: PresetCategory[] = [
                 ]
             }
         ]
+    },
+    {
+        id: "classic-games",
+        title: "Classic Games",
+        description: "Digital versions of physical classics.",
+        presets: [
+            {
+                id: "twister",
+                title: "Twister Spinner",
+                segments: [
+                    { id: "1", text: "Left Hand RED", color: "#EF4444" },
+                    { id: "2", text: "Left Hand BLUE", color: "#3B82F6" },
+                    { id: "3", text: "Left Hand YELLOW", color: "#FACC15" },
+                    { id: "4", text: "Left Hand GREEN", color: "#10B981" },
+                    { id: "5", text: "Right Hand RED", color: "#EF4444" },
+                    { id: "6", text: "Right Hand BLUE", color: "#3B82F6" },
+                    { id: "7", text: "Right Hand YELLOW", color: "#FACC15" },
+                    { id: "8", text: "Right Hand GREEN", color: "#10B981" },
+                    { id: "9", text: "Left Foot RED", color: "#EF4444" },
+                    { id: "10", text: "Left Foot BLUE", color: "#3B82F6" },
+                    { id: "11", text: "Left Foot YELLOW", color: "#FACC15" },
+                    { id: "12", text: "Left Foot GREEN", color: "#10B981" },
+                    { id: "13", text: "Right Foot RED", color: "#EF4444" },
+                    { id: "14", text: "Right Foot BLUE", color: "#3B82F6" },
+                    { id: "15", text: "Right Foot YELLOW", color: "#FACC15" },
+                    { id: "16", text: "Right Foot GREEN", color: "#10B981" },
+                ]
+            },
+            {
+                id: "coin-flip",
+                title: "Coin Flip",
+                segments: [
+                    { id: "1", text: "HEADS", color: "#FACC15" },
+                    { id: "2", text: "TAILS", color: "#94A3B8" },
+                ]
+            },
+            {
+                id: "dice",
+                title: "Roll a Die (D6)",
+                segments: [
+                    { id: "1", text: "1", color: "#EF4444" },
+                    { id: "2", text: "2", color: "#3B82F6" },
+                    { id: "3", text: "3", color: "#FACC15" },
+                    { id: "4", text: "4", color: "#10B981" },
+                    { id: "5", text: "5", color: "#8B5CF6" },
+                    { id: "6", text: "6", color: "#EC4899" },
+                ]
+            },
+            {
+                id: "magic-8-ball",
+                title: "Magic 8-Ball",
+                segments: [
+                    { id: "1", text: "Yes", color: "#10B981" },
+                    { id: "2", text: "No", color: "#EF4444" },
+                    { id: "3", text: "Maybe", color: "#FACC15" },
+                    { id: "4", text: "Ask Later", color: "#3B82F6" },
+                    { id: "5", text: "Definitely", color: "#10B981" },
+                    { id: "6", text: "Unlikely", color: "#EF4444" },
+                ]
+            }
+        ]
     }
 ];

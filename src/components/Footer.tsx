@@ -16,6 +16,7 @@ export function Footer() {
                 {/* Links */}
                 <div className="flex gap-8 text-sm font-medium">
                     <Link href="/" className="text-zinc-400 hover:text-white transition-colors">Home</Link>
+                    <Link href="/games" className="text-zinc-400 hover:text-white transition-colors">Games</Link>
                     <Link href="/library" className="text-zinc-400 hover:text-white transition-colors">Library</Link>
                     <Link href="/about" className="text-zinc-400 hover:text-white transition-colors">About</Link>
                     <Link href="/privacy" className="text-zinc-400 hover:text-white transition-colors">Privacy</Link>

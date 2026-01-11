@@ -12,6 +12,8 @@ import { SpinButton } from "@/components/wheel/SpinButton";
 import { supabase } from "@/lib/supabase";
 import { WheelSegment } from "@/lib/types";
 import { PRESET_CATEGORIES } from "@/lib/constants";
+import { Trash2, RotateCcw, Trophy } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const INITIAL_SEGMENTS: WheelSegment[] = [
   { id: "1", text: "Pizza", color: "#EF4444" },
@@ -26,10 +28,12 @@ function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [segments, setSegments] = useState<WheelSegment[]>(INITIAL_SEGMENTS);
+  const [initialSegments, setInitialSegments] = useState<WheelSegment[]>(INITIAL_SEGMENTS);
   const [title, setTitle] = useState("My Decision Wheel");
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<WheelSegment | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [isEliminationMode, setIsEliminationMode] = useState(false);
 
   useEffect(() => {
     const templateId = searchParams.get("template");
@@ -38,6 +42,7 @@ function HomeContent() {
         const preset = cat.presets.find(p => p.id === templateId);
         if (preset) {
           setSegments(preset.segments);
+          setInitialSegments(preset.segments);
           setTitle(preset.title);
           break;
         }
@@ -89,8 +94,16 @@ function HomeContent() {
   };
 
   const closeWinnerModal = () => {
+    if (isEliminationMode && winner) {
+      setSegments(prev => prev.filter(s => s.id !== winner.id));
+    }
     setWinner(null);
   };
+
+  const resetGame = () => {
+    setSegments(initialSegments);
+    setWinner(null);
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-pink-500/30 overflow-x-hidden relative">
@@ -115,6 +128,7 @@ function HomeContent() {
             />
           </div>
           <div className="flex items-center gap-4">
+            <button onClick={() => router.push("/games")} className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Games 🎮</button>
             <button onClick={() => router.push("/library")} className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Library</button>
             <button
               onClick={handleShare}
@@ -143,6 +157,30 @@ function HomeContent() {
             <p className="text-zinc-400 text-lg font-medium">
               {winner ? "We have a winner!" : "Can't decide? Let fate choose for you."}
             </p>
+          </div>
+
+          {/* Game Controls */}
+          <div className="flex items-center gap-4 bg-white/5 p-2 rounded-full border border-white/5">
+            <button
+              onClick={() => setIsEliminationMode(!isEliminationMode)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all",
+                isEliminationMode ? "bg-red-500/20 text-red-400 border border-red-500/50" : "hover:bg-white/5 text-zinc-400"
+              )}
+            >
+              <Trash2 size={14} />
+              Elimination Mode {isEliminationMode ? "ON" : "OFF"}
+            </button>
+
+            {isEliminationMode && (
+              <button
+                onClick={resetGame}
+                className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors"
+                title="Reset Wheel"
+              >
+                <RotateCcw size={16} />
+              </button>
+            )}
           </div>
 
           <div className="relative w-full max-w-md">

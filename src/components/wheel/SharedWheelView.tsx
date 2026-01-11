@@ -82,6 +82,7 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
                         </Link>
                     </div>
                     <div className="flex items-center gap-4">
+                        <Link href="/games" className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Games</Link>
                         <Link href="/library" className="text-sm font-medium hover:text-indigo-400 transition-colors text-zinc-300">Library</Link>
                         <Link href="/" className="px-6 py-2 bg-white text-black rounded-full font-bold text-xs uppercase hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                             Create Your Own
