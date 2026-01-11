@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
@@ -14,10 +14,15 @@ import { supabase } from "@/lib/supabase";
 import { Check, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const SPINS_BEFORE_AD = 4;
+
 export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: Wheel; isAlreadyPublished?: boolean }) {
     const [isSpinning, setIsSpinning] = useState(false);
     const [winner, setWinner] = useState<WheelSegment | null>(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+
+    // Track spins for Ad Refresh
+    const spinCountRef = useRef(0);
 
     const handleSpinEnd = (winningSegment: WheelSegment) => {
         setWinner(winningSegment);
@@ -27,6 +32,8 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
         supabase.rpc("increment_spin_count", { target_id: wheel.id }).then(({ error }) => {
             if (error) console.error("Failed to increment spin count:", error);
         });
+
+        spinCountRef.current += 1;
     };
 
     const triggerConfetti = () => {
@@ -138,7 +145,12 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
-                        onClick={() => setWinner(null)}
+                        onClick={() => {
+                            setWinner(null);
+                            if (spinCountRef.current > 0 && spinCountRef.current % SPINS_BEFORE_AD === 0) {
+                                window.dispatchEvent(new Event("refresh-ad"));
+                            }
+                        }}
                     >
                         <motion.div
                             initial={{ scale: 0.5, y: 100 }}
@@ -155,7 +167,12 @@ export function SharedWheelView({ wheel, isAlreadyPublished = false }: { wheel: 
                             </div>
 
                             <button
-                                onClick={() => setWinner(null)}
+                                onClick={() => {
+                                    setWinner(null);
+                                    if (spinCountRef.current > 0 && spinCountRef.current % SPINS_BEFORE_AD === 0) {
+                                        window.dispatchEvent(new Event("refresh-ad"));
+                                    }
+                                }}
                                 className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25"
                             >
                                 Spin Again

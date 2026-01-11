@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import confetti from "canvas-confetti";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +24,8 @@ const INITIAL_SEGMENTS: WheelSegment[] = [
   { id: "6", text: "Pasta", color: "#EC4899" },
 ];
 
+const SPINS_BEFORE_AD = 4;
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,6 +36,10 @@ function HomeContent() {
   const [winner, setWinner] = useState<WheelSegment | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [isEliminationMode, setIsEliminationMode] = useState(false);
+
+  // Ref to track spins for ads (persistence not needed per session)
+  // We useRef so it doesn't trigger re-renders
+  const spinCountRef = useRef(0);
 
   useEffect(() => {
     const templateId = searchParams.get("template");
@@ -53,6 +59,7 @@ function HomeContent() {
   const handleSpinEnd = (winningSegment: WheelSegment) => {
     setWinner(winningSegment);
     triggerConfetti();
+    spinCountRef.current += 1;
   };
 
   const handleShare = async () => {
@@ -98,6 +105,11 @@ function HomeContent() {
       setSegments(prev => prev.filter(s => s.id !== winner.id));
     }
     setWinner(null);
+
+    // Trigger Ad Refresh every X spins
+    if (spinCountRef.current > 0 && spinCountRef.current % SPINS_BEFORE_AD === 0) {
+      window.dispatchEvent(new Event("refresh-ad"));
+    }
   };
 
   const resetGame = () => {
